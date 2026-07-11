@@ -31,7 +31,11 @@
     .totals td.label { color: #54698d; text-align: right; }
     .totals td.value { text-align: right; font-weight: bold; color: #16325c; }
     .totals tr.grand td { border-top: 2px solid #0b5cab; font-size: 13px; color: #0b5cab; padding-top: 6px; }
-    .foot { margin-top: 26px; font-size: 9px; color: #8c98a9; border-top: 1px solid #d8dde6; padding-top: 6px; }
+    .terms { margin-top: 26px; }
+    .terms h2 { font-size: 12px; color: #0b5cab; margin: 0 0 6px 0; border-bottom: 1px solid #d8dde6; padding-bottom: 4px; }
+    .terms ul { margin: 0; padding-left: 16px; }
+    .terms li { font-size: 10px; color: #16325c; padding: 2px 0; }
+    .foot { margin-top: 20px; font-size: 9px; color: #8c98a9; border-top: 1px solid #d8dde6; padding-top: 6px; }
     .empty { font-size: 12px; color: #c23934; padding: 20px 0; }
 </style>
 </head>
@@ -68,9 +72,9 @@
             <td class="info-value">{!p.opportunityName}</td>
         </tr>
         <tr>
-            <td class="info-label">Validade</td>
+            <td class="info-label">Valida ate</td>
             <td class="info-value">
-                <apex:outputText value="{0,date,dd/MM/yyyy}"><apex:param value="{!p.closeDate}"/></apex:outputText>
+                <apex:outputText value="{0,date,dd/MM/yyyy}"><apex:param value="{!p.validityDate}"/></apex:outputText>
             </td>
             <td class="info-label">Desconto</td>
             <td class="info-value">
@@ -129,7 +133,20 @@
         </tr>
     </table>
 
+    <apex:outputPanel rendered="{!p.commercialTerms.size > 0}" layout="none">
+        <div class="terms">
+            <h2>Condicoes comerciais</h2>
+            <ul>
+                <apex:repeat value="{!p.commercialTerms}" var="term">
+                    <li>{!term}</li>
+                </apex:repeat>
+            </ul>
+        </div>
+    </apex:outputPanel>
+
     <div class="foot">
+        Proposta valida ate
+        <apex:outputText value="{0,date,dd/MM/yyyy}"><apex:param value="{!p.validityDate}"/></apex:outputText>.
         Documento gerado automaticamente a partir da Oportunidade no Salesforce. Os valores refletem o
         desconto aprovado no sistema. Cenario ficticio de demonstracao (Vetra Distribuidora).
     </div>

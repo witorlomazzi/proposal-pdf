@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>Proposal_Validity_Days</fullName>
+        <categories>Proposta</categories>
+        <language>pt_BR</language>
+        <protected>false</protected>
+        <shortDescription>Validade da proposta em dias (emissao + N)</shortDescription>
+        <value>15</value>
+    </labels>
+    <labels>
+        <fullName>Proposal_Commercial_Terms</fullName>
+        <categories>Proposta</categories>
+        <language>pt_BR</language>
+        <protected>false</protected>
+        <shortDescription>Condicoes comerciais da proposta (itens separados por barra vertical)</shortDescription>
+        <value>Precos em reais (BRL), impostos inclusos.|Condicao de pagamento: 30 dias apos a entrega.|Frete CIF para capitais; FOB para as demais localidades.|Prazo de entrega confirmado no ato do pedido, conforme disponibilidade de estoque.|Proposta sujeita a analise de credito.</value>
+    </labels>
+</CustomLabels>

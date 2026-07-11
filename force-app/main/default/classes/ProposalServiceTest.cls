@@ -105,4 +105,36 @@ private class ProposalServiceTest {
         System.assertEquals(1000, p.discountAmount, 'desconto 50% de 2000');
         System.assertEquals(1000, p.grandTotal, 'total com desconto');
     }
+
+    @IsTest
+    static void validityAddsDaysToIssueDate() {
+        Date issue = Date.newInstance(2026, 7, 11);
+        System.assertEquals(
+            Date.newInstance(2026, 7, 26),
+            ProposalService.validityFrom(issue, 15),
+            'validade e a emissao mais 15 dias'
+        );
+    }
+
+    @IsTest
+    static void validityDefensiveWithNullAndNegative() {
+        System.assertEquals(null, ProposalService.validityFrom(null, 15), 'emissao nula devolve nulo');
+        Date issue = Date.newInstance(2026, 7, 11);
+        System.assertEquals(issue, ProposalService.validityFrom(issue, null), 'dias nulos contam como zero');
+        System.assertEquals(issue, ProposalService.validityFrom(issue, -5), 'dias negativos contam como zero');
+    }
+
+    @IsTest
+    static void parseTermsSplitsTrimsAndDropsBlanks() {
+        List<String> terms = ProposalService.parseTerms('  Item A |Item B|  | Item C ');
+        System.assertEquals(3, terms.size(), 'tres itens (o em branco e descartado)');
+        System.assertEquals('Item A', terms[0], 'aparou espacos do primeiro item');
+        System.assertEquals('Item C', terms[2], 'aparou espacos do ultimo item');
+    }
+
+    @IsTest
+    static void parseTermsEmptyForBlankInput() {
+        System.assertEquals(0, ProposalService.parseTerms(null).size(), 'nulo devolve lista vazia');
+        System.assertEquals(0, ProposalService.parseTerms('   ').size(), 'em branco devolve lista vazia');
+    }
 }

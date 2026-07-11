@@ -70,6 +70,9 @@ private class ProposalPdfControllerTest {
         System.assertEquals(100, p.discountAmount, 'desconto de 10%');
         System.assertEquals(900, p.grandTotal, 'total com desconto');
         System.assertEquals(Date.today(), ctrl.getIssueDate(), 'data de emissao e hoje');
+        System.assertNotEquals(null, p.validityDate, 'validade preenchida a partir da configuracao');
+        System.assert(p.validityDate >= Date.today(), 'validade nao pode ser anterior a emissao');
+        System.assert(!p.commercialTerms.isEmpty(), 'condicoes comerciais carregadas do Custom Label');
     }
 
     @IsTest

@@ -37,6 +37,8 @@ public inherited sharing class ProposalService {
         @AuraEnabled public Decimal subtotal { get; set; } // soma das linhas, antes do desconto
         @AuraEnabled public Decimal discountAmount { get; set; } // valor do desconto sobre o subtotal
         @AuraEnabled public Decimal grandTotal { get; set; } // subtotal ja com o desconto
+        @AuraEnabled public Date validityDate { get; set; } // ate quando a proposta vale (emissao + N dias)
+        @AuraEnabled public List<String> commercialTerms { get; set; } // condicoes comerciais, uma por item
 
         public Proposal() {
             this.lines = new List<Line>();
@@ -44,6 +46,7 @@ public inherited sharing class ProposalService {
             this.discountAmount = 0;
             this.grandTotal = 0;
             this.discountPercent = 0;
+            this.commercialTerms = new List<String>();
         }
     }
 
@@ -79,6 +82,39 @@ public inherited sharing class ProposalService {
             .setScale(2, System.RoundingMode.HALF_UP);
         result.grandTotal = (result.subtotal - result.discountAmount).setScale(2, System.RoundingMode.HALF_UP);
         return result;
+    }
+
+    /**
+     * Data de validade da proposta: data de emissao mais o numero de dias
+     * configurado. Puro e defensivo — emissao nula devolve nulo; dias nulos ou
+     * negativos contam como zero (a proposta vale ao menos no dia da emissao).
+     * O numero de dias vem de configuracao (Custom Label), nunca de campo custom.
+     */
+    public static Date validityFrom(Date issueDate, Integer validityDays) {
+        if (issueDate == null) {
+            return null;
+        }
+        Integer days = (validityDays == null || validityDays < 0) ? 0 : validityDays;
+        return issueDate.addDays(days);
+    }
+
+    /**
+     * Quebra o texto de condicoes comerciais (uma unica configuracao, itens
+     * separados por barra vertical) na lista de itens exibida no documento.
+     * Ignora itens em branco e apara espacos. Texto nulo/vazio devolve lista vazia.
+     */
+    public static List<String> parseTerms(String raw) {
+        List<String> terms = new List<String>();
+        if (String.isBlank(raw)) {
+            return terms;
+        }
+        for (String item : raw.split('\\|')) {
+            String trimmed = item == null ? '' : item.trim();
+            if (String.isNotBlank(trimmed)) {
+                terms.add(trimmed);
+            }
+        }
+        return terms;
     }
 
     public class ProposalException extends Exception {}
