@@ -6,6 +6,18 @@ on:
     branches: [master]
 
 jobs:
+  jest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run LWC Jest tests
+        run: npm run test:unit
+
   apex:
     runs-on: ubuntu-latest
     steps:
@@ -20,7 +32,7 @@ jobs:
       - name: Deploy source
         run: sf project deploy start --target-org test_org --wait 10
       - name: Run Apex tests
-        run: sf apex run test --class-names ProposalServiceTest ProposalControllerTest --target-org test_org --wait 10 --code-coverage --result-format json > apex-results.json
+        run: sf apex run test --class-names ProposalServiceTest ProposalControllerTest ProposalPdfControllerTest --target-org test_org --wait 10 --code-coverage --result-format json > apex-results.json
       - name: Validate Apex coverage
         run: |
           COVERAGE=$(cat apex-results.json | jq '.result.coverage | min_by(.percentage) | .percentage')
