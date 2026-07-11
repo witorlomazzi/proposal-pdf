@@ -1,0 +1,142 @@
+<apex:page standardController="Opportunity"
+           extensions="ProposalPdfController"
+           renderAs="pdf"
+           applyBodyTag="false"
+           applyHtmlTag="false"
+           showHeader="false"
+           sidebar="false"
+           standardStylesheets="false"
+           title="Proposta comercial - Vetra">
+<html>
+<head>
+<style type="text/css">
+    @page { size: A4; margin: 1.4cm; }
+    body { font-family: Arial, Helvetica, sans-serif; color: #16325c; font-size: 12px; }
+    .brand { font-size: 22px; font-weight: bold; color: #0b5cab; }
+    .brand-sub { font-size: 10px; color: #54698d; }
+    .doc-title { font-size: 15px; font-weight: bold; color: #16325c; text-align: right; }
+    .doc-meta { font-size: 10px; color: #54698d; text-align: right; }
+    .header-tbl { width: 100%; border-bottom: 2px solid #0b5cab; padding-bottom: 8px; margin-bottom: 14px; }
+    .info-tbl { width: 100%; margin-bottom: 16px; }
+    .info-tbl td { font-size: 11px; padding: 2px 0; }
+    .info-label { color: #54698d; width: 90px; }
+    .info-value { color: #16325c; font-weight: bold; }
+    .items { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+    .items th { background-color: #0b5cab; color: #ffffff; font-size: 11px; text-align: left; padding: 6px 8px; }
+    .items th.num, .items td.num { text-align: right; }
+    .items td { font-size: 11px; padding: 6px 8px; border-bottom: 1px solid #d8dde6; }
+    .items tr.alt td { background-color: #f4f6f9; }
+    .totals { width: 45%; margin-left: 55%; border-collapse: collapse; }
+    .totals td { font-size: 11px; padding: 4px 8px; }
+    .totals td.label { color: #54698d; text-align: right; }
+    .totals td.value { text-align: right; font-weight: bold; color: #16325c; }
+    .totals tr.grand td { border-top: 2px solid #0b5cab; font-size: 13px; color: #0b5cab; padding-top: 6px; }
+    .foot { margin-top: 26px; font-size: 9px; color: #8c98a9; border-top: 1px solid #d8dde6; padding-top: 6px; }
+    .empty { font-size: 12px; color: #c23934; padding: 20px 0; }
+</style>
+</head>
+<body>
+
+<apex:variable var="p" value="{!proposal}">
+
+<apex:outputPanel rendered="{!proposal == null}" layout="none">
+    <div class="empty">Nao foi possivel montar a proposta: Oportunidade nao encontrada ou sem permissao de acesso.</div>
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{!proposal != null}" layout="none">
+
+    <table class="header-tbl">
+        <tr>
+            <td>
+                <div class="brand">Vetra Distribuidora</div>
+                <div class="brand-sub">Materiais tecnicos e industriais</div>
+            </td>
+            <td>
+                <div class="doc-title">Proposta comercial</div>
+                <div class="doc-meta">Emitida em
+                    <apex:outputText value="{0,date,dd/MM/yyyy}"><apex:param value="{!issueDate}"/></apex:outputText>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="info-tbl">
+        <tr>
+            <td class="info-label">Cliente</td>
+            <td class="info-value">{!p.accountName}</td>
+            <td class="info-label">Oportunidade</td>
+            <td class="info-value">{!p.opportunityName}</td>
+        </tr>
+        <tr>
+            <td class="info-label">Validade</td>
+            <td class="info-value">
+                <apex:outputText value="{0,date,dd/MM/yyyy}"><apex:param value="{!p.closeDate}"/></apex:outputText>
+            </td>
+            <td class="info-label">Desconto</td>
+            <td class="info-value">
+                <apex:outputText value="{0,number,##0.##}"><apex:param value="{!p.discountPercent}"/></apex:outputText>%
+            </td>
+        </tr>
+    </table>
+
+    <table class="items">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th class="num">Qtd.</th>
+                <th class="num">Preco unit. (R$)</th>
+                <th class="num">Total da linha (R$)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <apex:repeat value="{!p.lines}" var="line" id="lines">
+                <tr>
+                    <td>{!line.productName}</td>
+                    <td class="num">
+                        <apex:outputText value="{0,number,##0.##}"><apex:param value="{!line.quantity}"/></apex:outputText>
+                    </td>
+                    <td class="num">
+                        <apex:outputText value="{0,number,###,##0.00}"><apex:param value="{!line.unitPrice}"/></apex:outputText>
+                    </td>
+                    <td class="num">
+                        <apex:outputText value="{0,number,###,##0.00}"><apex:param value="{!line.lineTotal}"/></apex:outputText>
+                    </td>
+                </tr>
+            </apex:repeat>
+        </tbody>
+    </table>
+
+    <table class="totals">
+        <tr>
+            <td class="label">Subtotal</td>
+            <td class="value">R$
+                <apex:outputText value="{0,number,###,##0.00}"><apex:param value="{!p.subtotal}"/></apex:outputText>
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Desconto
+                (<apex:outputText value="{0,number,##0.##}"><apex:param value="{!p.discountPercent}"/></apex:outputText>%)
+            </td>
+            <td class="value">- R$
+                <apex:outputText value="{0,number,###,##0.00}"><apex:param value="{!p.discountAmount}"/></apex:outputText>
+            </td>
+        </tr>
+        <tr class="grand">
+            <td class="label">Total</td>
+            <td class="value">R$
+                <apex:outputText value="{0,number,###,##0.00}"><apex:param value="{!p.grandTotal}"/></apex:outputText>
+            </td>
+        </tr>
+    </table>
+
+    <div class="foot">
+        Documento gerado automaticamente a partir da Oportunidade no Salesforce. Os valores refletem o
+        desconto aprovado no sistema. Cenario ficticio de demonstracao (Vetra Distribuidora).
+    </div>
+
+</apex:outputPanel>
+</apex:variable>
+
+</body>
+</html>
+</apex:page>

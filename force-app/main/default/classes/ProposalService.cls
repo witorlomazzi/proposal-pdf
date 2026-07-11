@@ -15,25 +15,28 @@
  */
 public inherited sharing class ProposalService {
 
+    // Campos expostos como propriedades para serem lidos tanto pelo LWC (@AuraEnabled)
+    // quanto pela pagina Visualforce (que so enxerga getters/propriedades, nao campos).
+
     /** Uma linha da proposta. */
     public class Line {
-        @AuraEnabled public String productName;
-        @AuraEnabled public Decimal quantity;
-        @AuraEnabled public Decimal unitPrice;
-        @AuraEnabled public Decimal lineTotal; // quantidade x preco unitario
+        @AuraEnabled public String productName { get; set; }
+        @AuraEnabled public Decimal quantity { get; set; }
+        @AuraEnabled public Decimal unitPrice { get; set; }
+        @AuraEnabled public Decimal lineTotal { get; set; } // quantidade x preco unitario
     }
 
     /** O documento da proposta pronto para renderizar. */
     public class Proposal {
-        @AuraEnabled public Id opportunityId;
-        @AuraEnabled public String opportunityName;
-        @AuraEnabled public String accountName;
-        @AuraEnabled public Date closeDate;
-        @AuraEnabled public List<Line> lines;
-        @AuraEnabled public Decimal discountPercent; // desconto da oportunidade (fonte unica)
-        @AuraEnabled public Decimal subtotal; // soma das linhas, antes do desconto
-        @AuraEnabled public Decimal discountAmount; // valor do desconto sobre o subtotal
-        @AuraEnabled public Decimal grandTotal; // subtotal ja com o desconto
+        @AuraEnabled public Id opportunityId { get; set; }
+        @AuraEnabled public String opportunityName { get; set; }
+        @AuraEnabled public String accountName { get; set; }
+        @AuraEnabled public Date closeDate { get; set; }
+        @AuraEnabled public List<Line> lines { get; set; }
+        @AuraEnabled public Decimal discountPercent { get; set; } // desconto da oportunidade (fonte unica)
+        @AuraEnabled public Decimal subtotal { get; set; } // soma das linhas, antes do desconto
+        @AuraEnabled public Decimal discountAmount { get; set; } // valor do desconto sobre o subtotal
+        @AuraEnabled public Decimal grandTotal { get; set; } // subtotal ja com o desconto
 
         public Proposal() {
             this.lines = new List<Line>();
